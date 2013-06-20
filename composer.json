@@ -1,0 +1,8 @@
+{
+  "require": {
+    "symfony/console": "*"
+  },
+  "autoload": {
+    "psr-0": {"Marks": "src/"}
+  }
+}

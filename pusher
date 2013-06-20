@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+require_once('vendor/autoload.php');
+
+define('SCRIPTS_ROOT', __DIR__);
+define('LIBS_ROOT', SCRIPTS_ROOT . '/lib');
+
+use Symfony\Component\Console\Application;
+
+$application = new Application('Pusher', '0.1a');
+
+$application->run();
