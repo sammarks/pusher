@@ -1,3 +1,16 @@
 {
-
+    "projects": [
+        /**
+         * Project structure:
+         *
+         * {
+         *     "directory": "/Users/sammarks/Code/personal/test-project/",
+         *     "vcs": "subversion", (or git)
+         *     "remote": {
+         *         "host": "personal",
+         *         "directory": "/var/www/test-project"
+         *     }
+         * }
+         */
+    ]
 }

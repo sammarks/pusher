@@ -50,6 +50,12 @@ class BaseCommand extends Command {
         }
     }
 
+    /**
+     * Writes the existing configuration to the specified file.
+     *
+     * @param  string $file The file to write to.
+     * @return void
+     */
     protected function writeConfig($file)
     {
         $json_contents = json_encode($this->config);
