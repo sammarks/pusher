@@ -23,3 +23,21 @@ Now, restart your shell and run Pusher by typing:
     pusher
 
 from anywhere!
+
+## Usage
+
+Write some code, and then run this command from the root directory
+of your project:
+
+    pusher submit "Commit Message"
+
+You'll then be asked to setup your project. The project setup wizard
+will ask you several questions about your project configuration. Here
+are a couple of the key configuration values:
+
+- Directory of the project
+- VCS Type (subversion, git)
+- Remote Host
+- Remote Directory
+- `sudo` needed on remote
+- Custom commands to run on remote
