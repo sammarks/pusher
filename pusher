@@ -9,5 +9,6 @@ define('LIBS_ROOT', SCRIPTS_ROOT . '/lib');
 use Symfony\Component\Console\Application;
 
 $application = new Application('Pusher', '0.1a');
-
+$application->add(new Marks\Pusher\SubmitCommand());
+$application->add(new Marks\Pusher\RegisterCommand());
 $application->run();

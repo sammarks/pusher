@@ -7,11 +7,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 
 use Marks\Pusher\VCWrappers\Git;
 use Marks\Pusher\VCWrappers\Subversion;
 
-class SubmitCommand extends Command {
+class SubmitCommand extends BaseCommand
+{
 
     /**
      * Configures the command.
@@ -21,9 +23,9 @@ class SubmitCommand extends Command {
     protected function configure()
     {
         $this
-            ->setName('pusher:submit')
+            ->setName('submit')
             ->setDescription('Commits and Deploys code changes.')
-            ->addArgument('message', InputArgument::OPTIONAL, 'VCS Commit Message');
+            ->addArgument('message', InputArgument::REQUIRED, 'VCS Commit Message');
     }
 
     /**
@@ -38,7 +40,7 @@ class SubmitCommand extends Command {
         parent::execute($input, $output);
 
         // Make sure we have a valid project.
-        $project = self::checkDirectory();
+        $project = $this->checkDirectory();
         while ($project == false) {
 
             // Ask the user if they want to create a project.
@@ -49,9 +51,12 @@ class SubmitCommand extends Command {
             if (!$create_project) exit;
 
             // Run the registration and refresh the project variable.
-            $register = $this->getApplication()->find('pusher:register');
-            $register->run($input, $output);
-            $project = self::checkDirectory();
+            $register = $this->getApplication()->find('register');
+            $arguments = array(
+                'command' => 'register',
+            );
+            $register->run(new ArrayInput($arguments), $output);
+            $project = $this->checkDirectory();
 
         }
 
@@ -79,7 +84,32 @@ class SubmitCommand extends Command {
 
         // Now deploy to the server.
         $this->log('Deploying');
-        $wrapper->deploy();
+
+        // Prepare the list of commands.
+        $commands = array();
+
+        if ($project['remote']['do-update']) {
+            $commands[] = str_replace('"', '\\"', $wrapper->deploy());
+        }
+
+        foreach ($project['remote']['extra-commands'] as $command) {
+            $commands[] = str_replace('"', '\\"', $command);
+        }
+
+        // Build out the main command.
+        $host = $project['remote']['host'];
+        $remote_command = 'ssh "' . $host . '" "';
+        if ($project['remote']['sudo-needed']) {
+            $remote_command .= 'sudo su -c \\"';
+        }
+        $remote_command .= implode(' && ', $commands);
+        if ($project['remote']['sudo-needed']) {
+            $remote_command .= '\\"';
+        }
+        $remote_command .= '"';
+
+        // Run the command.
+        $this->exec($remote_command, true);
 
         $this->log('Complete!', 'green');
     }
@@ -89,8 +119,9 @@ class SubmitCommand extends Command {
      *
      * @return mixed Array if a match was found, false if not.
      */
-    protected static function checkDirectory()
+    protected function checkDirectory()
     {
+        $this->loadConfig();
         $directory = getcwd();
         $match = null;
         foreach ($this->config['projects'] as $project) {

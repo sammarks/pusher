@@ -1,16 +1,18 @@
 {
     "projects": [
-        /**
-         * Project structure:
-         *
-         * {
-         *     "directory": "/Users/sammarks/Code/personal/test-project/",
-         *     "vcs": "subversion", (or git)
-         *     "remote": {
-         *         "host": "personal",
-         *         "directory": "/var/www/test-project"
-         *     }
-         * }
-         */
+        {
+            "directory": "\/My\/Project\/Directory",
+            "vcs": "subversion",
+            "remote": {
+                "host": "my-remote-server",
+                "directory": "\/my\/remote\/directory",
+                "sudo-needed": false,
+                "extra-commands": [
+                    "\/run\/some\/command",
+                    "\/run\/some\/other\/command"
+                ],
+                "do-update": false
+            }
+        }
     ]
 }

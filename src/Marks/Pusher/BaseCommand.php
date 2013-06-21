@@ -8,7 +8,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BaseCommand extends Command {
+class BaseCommand extends Command
+{
 
     const DEBUG_VERBOSE = 1;
     const DEBUG_NORMAL = 0;
@@ -35,7 +36,7 @@ class BaseCommand extends Command {
      *
      * @return void
      */
-    protected function loadConfig()
+    public function loadConfig()
     {
         $configLocations = array(
             LIBS_ROOT . '/config.json',
@@ -44,8 +45,10 @@ class BaseCommand extends Command {
         );
         foreach ($configLocations as $location) {
             if (file_exists($location)) {
-                $this->config = array_merge($this->config, json_decode(file_get_contents($location)));
-                break;
+                $contents = json_decode(file_get_contents($location), true);
+                if (is_array($contents)) {
+                    $this->config = array_merge($this->config, $contents);
+                }
             }
         }
     }
@@ -56,7 +59,7 @@ class BaseCommand extends Command {
      * @param  string $file The file to write to.
      * @return void
      */
-    protected function writeConfig($file)
+    public function writeConfig($file)
     {
         $json_contents = json_encode($this->config);
         file_put_contents($file, $json_contents);
@@ -88,7 +91,7 @@ class BaseCommand extends Command {
      *                         or verbose execution respectively.
      * @return void
      */
-    protected function log($message, $color = 'white', $level = self::DEBUG_NORMAL)
+    public function log($message, $color = 'white', $level = self::DEBUG_NORMAL)
     {
         if (!$this->input || !$this->output) {
             throw new \Exception('You must call parent::execute(...) before calling this function!');
@@ -158,6 +161,10 @@ class BaseCommand extends Command {
 
         if ($return_var == 1) {
             if ($exit_on_fail) {
+                $this->error('Output from errored command: ');
+                foreach ($output_array as $item) {
+                    $this->error($item);
+                }
                 $this->error('There was an error with the last command. The program will now exit.', true);
             } else {
                 return false;
