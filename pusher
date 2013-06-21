@@ -1,14 +1,17 @@
 #!/usr/bin/env php
 <?php
 
-require_once('vendor/autoload.php');
-
 define('SCRIPTS_ROOT', __DIR__);
 define('LIBS_ROOT', SCRIPTS_ROOT . '/lib');
 
+require_once(SCRIPTS_ROOT . '/vendor/autoload.php');
+
 use Symfony\Component\Console\Application;
 
+use Marks\Pusher\SubmitCommand;
+use Marks\Pusher\RegisterCommand;
+
 $application = new Application('Pusher', '0.1a');
-$application->add(new Marks\Pusher\SubmitCommand());
-$application->add(new Marks\Pusher\RegisterCommand());
+$application->add(new SubmitCommand());
+$application->add(new RegisterCommand());
 $application->run();
