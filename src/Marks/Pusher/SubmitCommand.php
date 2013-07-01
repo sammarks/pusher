@@ -92,8 +92,12 @@ class SubmitCommand extends BaseCommand
             $commands[] = str_replace('"', '\\"', $wrapper->deploy());
         }
 
-        foreach ($project['remote']['extra-commands'] as $command) {
-            $commands[] = str_replace('"', '\\"', $command);
+        // Add extra commands to the commands array.
+        if (array_key_exists('extra-commands', $project['remote']) &&
+            is_array($project['remote']['extra-commands'])) {
+            foreach ($project['remote']['extra-commands'] as $command) {
+                $commands[] = str_replace('"', '\\"', $command);
+            }
         }
 
         // Build out the main command.

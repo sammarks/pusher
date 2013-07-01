@@ -140,8 +140,9 @@ class RegisterCommand extends BaseCommand
         }
 
         // Remote extra commands.
+        $project['remote']['extra-commands'] = array();
         if ($input->getArgument('remote-commands')) {
-            $project['remote']['extra-commands'] = $input->getArgument('remote-commands');
+            $project['remote']['extra-commands'][] = $input->getArgument('remote-commands');
         } else {
             $this->askForRemoteCommands($project);
         }
