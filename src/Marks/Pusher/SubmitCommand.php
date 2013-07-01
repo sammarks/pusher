@@ -40,7 +40,7 @@ class SubmitCommand extends BaseCommand
         parent::execute($input, $output);
 
         // Make sure we have a valid project.
-        $project = $this->checkDirectory();
+        $project = $this->findProject();
         while ($project == false) {
 
             // Ask the user if they want to create a project.
