@@ -62,7 +62,10 @@ class BaseCommand extends Command
     public function writeConfig($file)
     {
         $json_contents = json_encode($this->config, JSON_PRETTY_PRINT);
-        file_put_contents($file, $json_contents);
+        $result = file_put_contents($file, $json_contents);
+        if ($result === false) {
+            $this->error('There was an error saving the configuration to "' . $file, true);
+        }
     }
 
     /**
