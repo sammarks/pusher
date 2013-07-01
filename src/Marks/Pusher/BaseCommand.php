@@ -61,7 +61,7 @@ class BaseCommand extends Command
      */
     public function writeConfig($file)
     {
-        $json_contents = json_encode($this->config);
+        $json_contents = json_encode($this->config, JSON_PRETTY_PRINT);
         file_put_contents($file, $json_contents);
     }
 
