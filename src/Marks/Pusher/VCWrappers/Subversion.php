@@ -69,10 +69,10 @@ class Subversion extends VCWrapper
 
         // Now, tell svn to add or delete those files.
         foreach ($results['added'] as $toAdd) {
-            $this->command->exec('cd ' . $this->project['directory'] . ' && svn add ' . $toAdd, false);
+            $this->command->exec('cd ' . $this->project['directory'] . ' && svn add ' . $toAdd, true);
         }
         foreach ($results['deleted'] as $toDelete) {
-            $this->command->exec('cd ' . $this->project['directory'] . ' && svn remove ' . $toDelete, false);
+            $this->command->exec('cd ' . $this->project['directory'] . ' && svn remove ' . $toDelete, true);
         }
 
         // Log the result if there is one to log.
