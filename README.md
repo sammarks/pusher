@@ -13,6 +13,11 @@ to your `/usr/local` folder.
     sudo su
     git clone https://github.com/sammarks/pusher /usr/local/pusher
     chmod a+x /usr/local/pusher/pusher
+    cd /usr/local/pusher
+    composer install
+    
+    # Make sure you own pusher.
+    chown -R username:staff /usr/local/pusher
 
 Then add pusher to your `PATH`.
 

@@ -40,11 +40,12 @@ class SubmitCommand extends BaseCommand
         parent::execute($input, $output);
 
         // Make sure we have a valid project.
-        $project = $this->checkDirectory();
+        $project = $this->findProject();
         while ($project == false) {
 
             // Ask the user if they want to create a project.
-            $this->log("There doesn't appear to be a project associated with this directory.", 'red');
+            $this->log("There doesn't appear to be a project associated with this directory, "
+                . "or any parent directories.", 'red');
             $create_project = $this->confirm('Would you like to create a project now?');
 
             // If the user chooses not to create a project, exit.
@@ -92,8 +93,12 @@ class SubmitCommand extends BaseCommand
             $commands[] = str_replace('"', '\\"', $wrapper->deploy());
         }
 
-        foreach ($project['remote']['extra-commands'] as $command) {
-            $commands[] = str_replace('"', '\\"', $command);
+        // Add extra commands to the commands array.
+        if (array_key_exists('extra-commands', $project['remote']) &&
+            is_array($project['remote']['extra-commands'])) {
+            foreach ($project['remote']['extra-commands'] as $command) {
+                $commands[] = str_replace('"', '\\"', $command);
+            }
         }
 
         // Build out the main command.
@@ -115,14 +120,40 @@ class SubmitCommand extends BaseCommand
     }
 
     /**
-     * Checks to see if the current directory is a supported project.
+     * Traverses the file tree to find an applicable project.
      *
-     * @return mixed Array if a match was found, false if not.
+     * @return mixed Array if found, null if not.
      */
-    protected function checkDirectory()
+    protected function findProject()
     {
+        // Get the current directory and its segments.
+        $current_directory = getcwd();
+        $segments = explode(DIRECTORY_SEPARATOR, $current_directory);
+        $project = null;
+        $currentSegments = count($segments);
+
+        // Load the configuration.
         $this->loadConfig();
-        $directory = getcwd();
+
+        // Traverse up the tree, finding an applicable project.
+        while ($project == null) {
+            $path = implode(DIRECTORY_SEPARATOR, array_slice($segments, 0, $currentSegments));
+            $project = $this->checkDirectory($path);
+            $currentSegments--;
+        }
+
+        // Now return the result.
+        return $project;
+    }
+
+    /**
+     * Checks to see if a specific directory matches a project.
+     *
+     * @param  string $directory The directory to test.
+     * @return mixed             Array if found, null if not.
+     */
+    protected function checkDirectory($directory)
+    {
         $match = null;
         foreach ($this->config['projects'] as $project) {
             // Trim the slashes from the beginning and end to make sure we
@@ -134,11 +165,7 @@ class SubmitCommand extends BaseCommand
             }
         }
 
-        if ($match !== null) {
-            return $match;
-        } else {
-            return false;
-        }
+        return $match;
     }
 
 }
